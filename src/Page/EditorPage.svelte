@@ -65,7 +65,7 @@
             this.index = index;
             this.path = path;
             this.canvas = canvas;
-            this.zoom = 0.6;
+            this.zoom = 0.3;
             this.canvasId = canvasId;
             this.canvasWrapperId = canvasWrapperId;
             this.object = new Array(0);
@@ -93,7 +93,7 @@
             this.index = index;
             this.path = path;
             this.canvas = canvas;
-            this.zoom = 0.6;
+            this.zoom = 0.3;
             this.canvasId = canvasId;
             this.canvasWrapperId = canvasWrapperId;
             this.object = new Array(0);
@@ -119,6 +119,13 @@
             this.index = index;
             this.componentIndex = componentIndex;
             this.tagType = tagType;
+            this.Event = new class Event {
+                constructor() {
+                    this.when = null;
+                    this.do = null;
+                    this.detail = null;
+                }
+            };
         }
     }
 
@@ -136,6 +143,7 @@
             //this.clickedObjectType = 'rect';
             this.propertyOrEvent = 'property';
             this.pageOrComponent = 'page';
+            this.propertyOrEvent = 'property';
             this.currentZoom = null;
             this.currentPageMode = 'page';
             this.componentIndex = 0;
@@ -393,6 +401,15 @@
                             currentObject.width = activeObject.width;
                             currentObject.height = activeObject.height;
                             currentObject.color = activeObject.fill.substr(1);  
+                            
+
+                            componentArray[0].object.forEach(element => {
+                                if (element.object.id == currentObject.id) {
+                                    currentObject.Event.when = element.Event.when;
+                                    currentObject.Event.do = element.Event.do;
+                                    currentObject.Event.detail = element.Event.detail;
+                                }
+                            });
 
                             if (activeObject.type == 'rect') {
                                 ui.objectType = 'rect';
@@ -410,14 +427,14 @@
                                 ui.objectType = 'textBox';
                                 currentObject.fontSize = activeObject.fontSize;
                             }
-
-                            
                         }
                         else {
                             ui.objectType = 'component';
                             currentComponent.width = componentArray[0].defaultObject.box.width;
                             currentComponent.height = componentArray[0].defaultObject.box.height;
                         }
+
+                        ui.propertyOrEvent = 'property';
                     }
                     else if (ui.mouseType == 2) {
 
@@ -454,6 +471,9 @@
                         currentObject.stroke = currentObject.object.stroke.substr(1);
                         currentObject.strokeWidth = currentObject.object.strokeWidth;
                         currentObject.tagType = 'rect';
+                        currentObject.Event.when = null;
+                        currentObject.Event.do = null;
+                        currentObject.Event.detail = null;
                         fabric.Object.prototype.selectable = true;
                         
                         ui.currentComponentObjectArray = componentArray[0].object;
@@ -494,6 +514,9 @@
                         currentObject.color = currentObject.object.fill.substr(1);  
                         currentObject.stroke = currentObject.object.stroke.substr(1);
                         currentObject.strokeWidth = currentObject.object.strokeWidth;
+                        currentObject.Event.when = null;
+                        currentObject.Event.do = null;
+                        currentObject.Event.detail = null;
                         currentObject.tagType = 'ellipse';
                         fabric.Object.prototype.selectable = true;
 
@@ -542,6 +565,9 @@
                         currentObject.y = componentArray[0].object[objectIndex].object.top;
                         currentObject.fontSize = componentArray[0].object[objectIndex].object.fontSize;
                         currentObject.color = currentObject.object.fill.substr(1);
+                        currentObject.Event.when = null;
+                        currentObject.Event.do = null;
+                        currentObject.Event.detail = null;
 
                         componentArray.forEach((element) => {
                             element.canvas.defaultCursor = `url("../icon/Cursor1.png"), auto`;
@@ -1190,7 +1216,7 @@
             ui.currentPageMode = 'page';
             ui.objectType = 'page';
 
-            CustomPropertyChild.refresh(ui.currentSelect)
+            CustomPropertyChild.refresh(ui.currentSelect, 'select')
             
         }
 
@@ -1382,7 +1408,15 @@
                             currentObject.y = activeObject.top;
                             currentObject.width = activeObject.width;
                             currentObject.height = activeObject.height;
-                            currentObject.color = activeObject.fill.substr(1);  
+                            currentObject.color = activeObject.fill.substr(1); 
+
+                            componentArray[0].object.forEach(element => {
+                                if (element.object.id == currentObject.id) {
+                                    currentObject.Event.when = element.Event.when;
+                                    currentObject.Event.do = element.Event.do;
+                                    currentObject.Event.detail = element.Event.detail;
+                                }
+                            });
                             
 
                             if (activeObject.type == 'rect') {
@@ -1399,12 +1433,15 @@
                                 ui.objectType = 'textBox';
                                 currentObject.fontSize = activeObject.fontSize;
                             }
+
+                            
                         }
                         else {
                             ui.objectType = 'component';
                             currentComponent.width = componentArray[length].defaultObject.box.width;
                             currentComponent.height = componentArray[length].defaultObject.box.height;
                         }
+                        ui.propertyOrEvent = 'property';
                     }
                     else if (ui.mouseType == 2) {
 
@@ -1442,6 +1479,9 @@
                         currentObject.stroke = currentObject.object.stroke.substr(1);
                         currentObject.strokeWidth = currentObject.object.strokeWidth;
                         fabric.Object.prototype.selectable = true;
+                        currentObject.Event.when = null;
+                        currentObject.Event.do = null;
+                        currentObject.Event.detail = null;
 
                         ui.currentComponentObjectArray = componentArray[length].object;
                         ui.objectType = 'rect';
@@ -1484,6 +1524,9 @@
                         currentObject.stroke = currentObject.object.stroke.substr(1);
                         currentObject.strokeWidth = currentObject.object.strokeWidth;
                         fabric.Object.prototype.selectable = true;
+                        currentObject.Event.when = null;
+                        currentObject.Event.do = null;
+                        currentObject.Event.detail = null;
 
                         ui.currentComponentObjectArray = componentArray[length].object;
                         ui.objectType = 'ellipse';
@@ -1527,6 +1570,10 @@
                         currentObject.y = componentArray[length].object[objectIndex].object.top;
                         currentObject.fontSize = componentArray[length].object[objectIndex].object.fontSize;
                         currentObject.color = currentObject.object.fill.substr(1);
+
+                        currentObject.Event.when = null;
+                        currentObject.Event.do = null;
+                        currentObject.Event.detail = null;
 
                         componentArray.forEach((element) => {
                             element.canvas.defaultCursor = `url("../icon/Cursor1.png"), auto`;
@@ -2220,7 +2267,6 @@
             createPageFile();
             createAddedFile();
             makeZip();
-            console.log(pageArray)
             
         }}></CustomTool2>
 
@@ -2292,7 +2338,7 @@
                         ui.currentSelect[index] = element.componentId;
                     });
 
-                    CustomPropertyChild.refresh(ui.currentSelect)
+                    CustomPropertyChild.refresh(ui.currentSelect, 'select')
 
                 }
                 else if (event.detail.pageOrComponent == 'component') {
@@ -2414,7 +2460,51 @@
         <!-- 속성 -->
         <div id="property-section-box">
             <CustomProperty bind:this={CustomPropertyChild} type={ui.objectType} currentObject={currentObject} currentComponent={currentComponent}
-            {componentArray}  currentSelect={ui.currentSelect}
+            {componentArray}  currentSelect={ui.currentSelect} currentPageMode={ui.currentPageMode} propertyOrEvent={ui.propertyOrEvent}
+            {pageArray}
+            on:eventWhen={(event)=>{
+                currentObject.Event.when = event.detail.data;
+                componentArray[ui.componentIndex].object.forEach(element => {
+                    // @ts-ignore
+                    if (element.object.id == currentObject.id) {
+                        element.Event.when = event.detail.data;
+                    }
+                });
+            }}
+
+            on:eventDo={(event)=>{
+                currentObject.Event.do = event.detail.data;
+                componentArray[ui.componentIndex].object.forEach(element => {
+                    // @ts-ignore
+                    if (element.object.id == currentObject.id) {
+                        element.Event.do = event.detail.data;
+                    }
+                });
+            }}
+
+            on:eventDetail={(event)=>{
+                currentObject.Event.detail = event.detail.data;
+                componentArray[ui.componentIndex].object.forEach(element => {
+                    // @ts-ignore
+                    if (element.object.id == currentObject.id) {
+                        element.Event.detail = event.detail.data;
+                    }
+                });
+            }}
+
+            on:eventReset={()=>{
+                currentObject.Event.when = null;
+                currentObject.Event.do = null;
+                currentObject.Event.detail = null;
+                componentArray[ui.componentIndex].object.forEach(element => {
+                    // @ts-ignore
+                    if (element.object.id == currentObject.id) {
+                        element.Event.when = null;
+                        element.Event.do = null;
+                        element.Event.detail = null;
+                    }
+                });
+            }}
 
             on:selectComponent2={(event)=>{
                 createComponentImage(event.detail.data);
